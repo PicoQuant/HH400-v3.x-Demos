@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "histomode", "histomode.vbproj", "{34092447-CB31-4E3F-A57C-3B7D60B82855}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{34092447-CB31-4E3F-A57C-3B7D60B82855}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{34092447-CB31-4E3F-A57C-3B7D60B82855}.Debug|x64.ActiveCfg = Debug|x64
+		{34092447-CB31-4E3F-A57C-3B7D60B82855}.Debug|x64.Build.0 = Debug|x64
+		{34092447-CB31-4E3F-A57C-3B7D60B82855}.Debug|x86.ActiveCfg = Debug|x64
+		{34092447-CB31-4E3F-A57C-3B7D60B82855}.Release|Any CPU.ActiveCfg = Release|x64
+		{34092447-CB31-4E3F-A57C-3B7D60B82855}.Release|x64.ActiveCfg = Release|x64
+		{34092447-CB31-4E3F-A57C-3B7D60B82855}.Release|x64.Build.0 = Release|x64
+		{34092447-CB31-4E3F-A57C-3B7D60B82855}.Release|x86.ActiveCfg = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
