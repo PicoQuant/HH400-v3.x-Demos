@@ -6,7 +6,7 @@ Get the lateste install here: http://www.picoquant.com/dl_software/HydraHarp400/
 
 ## Introduction
 
-TThe HydraHarp 400 is a TCSPC system with USB interface.  Dependent on the model it uses USB 2.0 or USB 3.0. The system requires a 686 class PC with suitable USB host controller, 1 GB of memory and at least 1 GHz CPU clock. The HydraHarp software is suitable for Windows 7 and Windows 8 including the x64 versions. 
+The HydraHarp 400 is a TCSPC system with USB interface.  Dependent on the model it uses USB 2.0 or USB 3.0. The system requires a 686 class PC with suitable USB host controller, 1 GB of memory and at least 1 GHz CPU clock. The HydraHarp software is suitable for Windows 7 and Windows 8 including the x64 versions. 
 
 
 ## Disclaimer
