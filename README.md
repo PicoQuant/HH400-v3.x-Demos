@@ -1,17 +1,12 @@
 # Demo Code for HHLib Programming Library for HydraHarp 400 
-Version 3.0  
-PicoQuant GmbH - October 2014  
+Latest version Version 3.0.0.1 
+PicoQuant GmbH - April 2015 
 
-
+Get the lateste install here: http://www.picoquant.com/dl_software/HydraHarp400/HydraHarp400_SW_and_DLL_v3_0_0_1.zip
 
 ## Introduction
 
-The HydraHarp 400 is a TCSPC system with USB interface. 
-The system requires a 686 class PC with USB 2.0/3.0 host controller,
-1024 MB of memory and at least 1 GHz CPU clock. The HydraHarp 
-software is suitable for Windows XP, Vista, 7, and 8.
-The programming library is a DLL with demos for various programming 
-languages. Please refer to the manual (PDF) for instructions.
+TThe HydraHarp 400 is a TCSPC system with USB interface.  Dependent on the model it uses USB 2.0 or USB 3.0. The system requires a 686 class PC with suitable USB host controller, 1 GB of memory and at least 1 GHz CPU clock. The HydraHarp software is suitable for Windows 7 and Windows 8 including the x64 versions. 
 
 
 ## Disclaimer
@@ -48,8 +43,17 @@ trademarks or copyrights of their respective owners. They are used only
 for identification or explanation and to the ownerís benefit, without 
 intent to infringe.
 
+## What's new in this Version 3.0.0.1
 
-## What's new in this Version
+Fixes an incompatibility with USB 3.0 ports of Intel Z97 chipsets. 
+Fixes some minor bugs in file content and user interface.
+Provides bugfixed file demos for LabVIEW 
+Provides an updated device driver to meet new Windows driver 
+signing requirements (XP and Vista are no longer supported). 
+Please read the notes for version 2.0 below if you are upgrading 
+from a software version prior to 2.0! 
+
+## What's new in this Version 3.0
 
 Version 3.0 is an improvement release that supersedes versions 2.x. 
 Please upgrade if you installed version 2.x. If you are still using 
