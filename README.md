@@ -44,7 +44,7 @@ trademarks or copyrights of their respective owners. They are used only
 for identification or explanation and to the owners benefit, without
 intent to infringe.
 
-## What's new in this Version
+## What's new in this Version 3.0.0.2
 
 Version 3.0.0.2 is a bugfix release addressing the following issues:
 - Fixes a firmware bug in continuous mode where the hardware controlled
