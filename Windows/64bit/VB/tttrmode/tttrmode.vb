@@ -13,9 +13,9 @@ Module Module1
     '
     '  The program uses a text console for user input/output
     '
-    '  Tested with MS Visual Basic 2010
+    '  Tested with MS Visual Basic 2010 and 2017
     '
-    '  Michael Wahl, PicoQuant GmbH, August 2014
+    '  Michael Wahl, PicoQuant GmbH, August 2014, Revised March 2019
     '
     '===========================================================
 
@@ -214,8 +214,10 @@ Module Module1
         Dim AcquisitionTime As Integer
         Dim SyncCFDLevel As Integer
         Dim SyncCFDZeroCross As Integer
+        Dim SyncOffset As Integer
         Dim InputCFDLevel As Integer
         Dim InputCFDZeroCross As Integer
+        Dim InputOffset As Integer
         Dim Retcode As Integer
         Dim LibVersion As New VB6.FixedLengthString(8)
         Dim ErrorString As New VB6.FixedLengthString(40)
@@ -334,8 +336,10 @@ Module Module1
         Binning = 0 '0=BaseRes, 1=2*Baseres, 2=4*Baseres and so on
         SyncCFDLevel = 50 'millivolts
         SyncCFDZeroCross = 10 'millivolts
+        SyncOffset = -5000 'ps (acts like a cable delay)
         InputCFDLevel = 50 'millivolts
         InputCFDZeroCross = 10 'millivolts
+        InputOffset = 0 'ps (acts like a cable delay)
         AcquisitionTime = 10000 'millisec
         Blocksz = TTREADMAX
 
@@ -351,7 +355,7 @@ Module Module1
             GoTo Ex
         End If
 
-        Retcode = HH_SetSyncChannelOffset(Dev(0), 0)
+        Retcode = HH_SetSyncChannelOffset(Dev(0), SyncOffset)
         If Retcode < 0 Then
             ConsolePrint("HH_SetSyncChannelOffset error " & CStr(Retcode) & vbCrLf)
             GoTo Ex
@@ -365,7 +369,7 @@ Module Module1
                 GoTo Ex
             End If
 
-            Retcode = HH_SetInputChannelOffset(Dev(0), i, InputCFDZeroCross)
+            Retcode = HH_SetInputChannelOffset(Dev(0), i, InputOffset)
             If Retcode < 0 Then
                 ConsolePrint("HH_SetInputChannelOffset error " & CStr(Retcode) & vbCrLf)
                 GoTo Ex

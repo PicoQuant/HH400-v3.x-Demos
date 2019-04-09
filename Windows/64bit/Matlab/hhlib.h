@@ -1,6 +1,6 @@
 /* Functions exported by the HydraHarp programming library HHLib*/
 
-/* Ver. 3.0.0.0 October 2014 */
+/* Ver. 3.0.0.2     March 2019 */
 
 #ifndef _WIN32
 #define _stdcall

@@ -3,7 +3,7 @@
 	HHLib programming library for HydraHarp 400
 	PicoQuant GmbH, 
 
-    Ver. 3.0.0.0      October 2014
+    Ver. 3.0.0.2     March 2019
 */
 
 
@@ -68,7 +68,7 @@
 #define CHANOFFSMAX  99999		//ps
 
 #define OFFSETMIN	0			//ps
-#define OFFSETMAX	500000		//ps 
+#define OFFSETMAX	500000		//ns 
 #define ACQTMIN		1			//ms
 #define ACQTMAX		360000000	//ms  (100*60*60*1000ms = 100h)
 

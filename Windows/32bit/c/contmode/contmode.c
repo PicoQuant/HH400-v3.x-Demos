@@ -17,16 +17,24 @@
   Tested with the following compilers:
 
   - MinGW 2.0.0-3 (free compiler for Win 32 bit)
-  - MS Visual C++ 6.0 (Win 32 bit)
-  - MS Visual Studio 2010 (Win 64 bit)
- 
+  - MS Visual Studio 2010 (Win 32/64 bit)
+  - Borland C++ 5.3 (Win 32 bit)
+  - gcc 4.8.1 (Linux 32/64 bit)
+
 
 ************************************************************************/
 
+#ifdef _WIN32
 #include <windows.h>
 #include <dos.h>
-#include <stdio.h>
 #include <conio.h>
+#else
+#include <unistd.h>
+#define Sleep(msec) usleep(msec*1000)
+#define __int64 long long
+#endif
+
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -405,7 +413,7 @@ int main(int argc, char* argv[])
 			//Of course the same processing scheme can be applied on file data.
 
 			//the header items can be accessed directly via the corresponding structure elements
-			printf("%2u %10I64u %10I64u",block.header.blocknum, block.header.starttime, block.header.ctctime);
+			printf("%2u %10llu %10llu",block.header.blocknum, block.header.starttime, block.header.ctctime);
 
 			if(block.header.channels!=EnabledChannels) //just a sanity check
 			{
@@ -436,9 +444,9 @@ int main(int argc, char* argv[])
 				// but we don't print them all here to keep the screen tidy.
 				
 				// now we obtain the histogram sums, knowing they immediately follow each histogram
-				histosums[i] = *(unsigned __int64*)(histograms[i]+block.header.histolen);
+				histosums[i] = *(unsigned __int64*)(histograms[i]+histolen);
 				// these we print as they are just one number per channel
-				printf(" %10I64u",histosums[i]);
+				printf(" %10llu",histosums[i]);
 
 				// note that disabled channels will not appear in the output data. 
 				// the index i may then not correspond to actual input channel numbers

@@ -1,12 +1,13 @@
 # Demo Code for HHLib Programming Library for HydraHarp 400
-Latest version Version 3.0.0.1
-PicoQuant GmbH - April 2015
+Latest version Version 3.0.0.2
+PicoQuant GmbH - March 2019
 
-Get the lateste install here: https://www.picoquant.com/dl_software/HydraHarp400/HydraHarp400_SW_and_DLL_v3_0_0_1.zip
+Get the latest install here: https://www.picoquant.com/dl_software/HydraHarp400/HydraHarp400_SW_and_DLL_v3_0_0_2.zip
 
 ## Introduction
 
-The HydraHarp 400 is a TCSPC system with USB interface.  Dependent on the model it uses USB 2.0 or USB 3.0. The system requires a 686 class PC with suitable USB host controller, 1 GB of memory and at least 1 GHz CPU clock. The HydraHarp software is suitable for Windows 7 and Windows 8 including the x64 versions.
+The HydraHarp 400 is a TCSPC and time tagging system with USB interface.
+The system requires a 686 class PC with USB 2.0/3.0 host controller, 4 GB of memory and at least a 1.5 GHz dual core CPU. The HydraHarp software is supported under Windows 8.1 and 10. Windows 7 should still work but is no longer actively tested or supported.
 
 
 ## Disclaimer
@@ -40,18 +41,39 @@ HydraHarp, PicoHarp, TimeHarp and NanoHarp are registered trademarks
 of PicoQuant GmbH. Other products and corporate names appearing in the
 product manuals or in the online documentation may or may not be registered
 trademarks or copyrights of their respective owners. They are used only
-for identification or explanation and to the owners benefit, without 
+for identification or explanation and to the owners benefit, without
 intent to infringe.
+
+## What's new in this Version
+
+Version 3.0.0.2 is a bugfix release addressing the following issues:
+- Fixes a firmware bug in continuous mode where the hardware controlled
+  start of a measurement did not work properly in repetition.
+- Fixes the elapsed time in TTTR mode (rolling over modulo 24h).
+- Fixes a data pointer time overflow.
+- Fixes the control panel where invalid input was not rejected.
+- Fixes the acquisition offset (1 ns steps now also in T3-Mode,
+  extended range of 500000 ns).
+- Fixes the handling of legacy TTTR mode files.
+- Provides several corrections in file demos, manual and help
+- Provides new file demos for Python.
+- Improves the support information dialog.
+- Provides an updated device driver v2.13 (note: secure boot is
+  not supported).
+- Supports Windows 10 and 8.1, Windows 7 still works but is no longer
+  actively supported/tested.
+
+Please read the notes for version 2.0 below if you are upgrading from 
+a software version prior to 2.0!
 
 ## What's new in this Version 3.0.0.1
 
-Fixes an incompatibility with USB 3.0 ports of Intel Z97 chipsets.
-Fixes some minor bugs in file content and user interface.
-Provides bugfixed file demos for LabVIEW
-Provides an updated device driver to meet new Windows driver
+- Fixes an incompatibility with USB 3.0 ports of Intel Z97 chipsets.
+- Fixes some minor bugs in file content and user interface.
+- Provides bugfixed file demos for LabVIEW
+- Provides an updated device driver to meet new Windows driver
 signing requirements (XP and Vista are no longer supported).
-Please read the notes for version 2.0 below if you are upgrading
-from a software version prior to 2.0!
+- Please read the notes for version 2.0 below if you are upgrading from a software version prior to 2.0!
 
 ## What's new in this Version 3.0
 
