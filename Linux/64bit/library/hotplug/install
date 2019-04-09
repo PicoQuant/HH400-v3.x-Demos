@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cp HydraHarp400.usermap /etc/hotplug/usb
+cp HydraHarp400 /etc/hotplug/usb

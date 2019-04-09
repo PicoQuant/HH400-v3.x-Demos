@@ -1,0 +1,34 @@
+#!/bin/sh
+
+if [ `getconf LONG_BIT` = "64" ]
+then
+    echo "64 bit systen detected, OK."
+else
+    echo "This is not a 64-bit sytsem. Installation aborted."
+    exit 1
+fi
+
+mkdir -p /usr/local/lib64/hh400
+cp hhlib.so /usr/local/lib64/hh400/
+chmod 755 /usr/local/lib64/hh400/hhlib.so
+cp hhlib.h  /usr/local/lib64/hh400/
+cp hhdefin.h  /usr/local/lib64/hh400/
+cp errorcodes.h  /usr/local/lib64/hh400/
+chmod 644 /usr/local/lib64/hh400/*.h
+
+# the following is a hack for Lazarus that has trouble
+# if the library is not following the naming convention
+# libXXX.so and also does not find the lib at runtime if it
+# is not in the libary search path 
+# we also try to detect and fix the inconsistent locations 
+# of x64-libs in different Linux distributions
+
+if [ -d "/usr/lib64" ]
+then
+    echo "Directory /usr/lib64 exists, assuming libdir for x64 is /usr/lib64"
+    ln -f /usr/local/lib64/hh400/hhlib.so /usr/lib64/libhh400.so
+else
+    echo "Directory /usr/lib64 not found, assuming libdir for x64 is /usr/lib"
+    ln -f /usr/local/lib64/hh400/hhlib.so /usr/lib/libhh400.so
+fi
+

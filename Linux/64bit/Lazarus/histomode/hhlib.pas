@@ -2,14 +2,25 @@ Unit HHLib;
 {                                                               }
 { Functions exported by the HydraHarp programming library HHLib }
 {                                                               }
-{ Ver. 3.0      August 2014                                     }
+{ Ver. 3.0.0.2     March 2019                                    }
 {                                                               }
 
 interface
 
 const
   LIB_VERSION    =      '3.0';
-  LIB_NAME       =      'libhh400.so';  //the only difference from Windows
+
+{$IFDEF WIN32}
+  LIB_NAME       =      'hhlib.dll';    //Windows 32 bit
+{$ENDIF}
+
+{$IFDEF WIN64}
+  LIB_NAME       =      'hhlib64.dll';  //Windows 64 bit
+{$ENDIF}
+
+{$IFDEF LINUX}
+  LIB_NAME       =      'libhh400.so';  //Linux
+{$ENDIF}
 
   MAXDEVNUM      =          8;   // max num of USB devices
 

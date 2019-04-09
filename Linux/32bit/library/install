@@ -1,0 +1,16 @@
+#!/bin/sh
+
+mkdir -p /usr/local/lib/hh400
+cp hhlib.so /usr/local/lib/hh400/
+cp hhlib.h  /usr/local/lib/hh400/
+cp hhdefin.h  /usr/local/lib/hh400/
+cp errorcodes.h  /usr/local/lib/hh400/
+
+chmod +x /usr/local/lib/hh400/hhlib.so
+
+# the following is a hack for Lazarus that has trouble
+# if the library is not following the naming convention
+# libXXX.so and also does not find the lib at runtime if it
+# is not in the libary search path 
+
+ln -f /usr/local/lib/hh400/hhlib.so /usr/lib/libhh400.so
