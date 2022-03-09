@@ -13,9 +13,9 @@ Module Module1
     '
     '  The program uses a text console for user input/output
     '
-    '  Tested with MS Visual Basic 2010 and 2017
+    '  Tested with MS Visual Basic 2010, 2017 and 2019
     '
-    '  Michael Wahl, PicoQuant GmbH, August 2014, Revised March 2019
+    '  Michael Wahl, PicoQuant GmbH, August 2014, Revised July 2021
     '
     '===========================================================
 

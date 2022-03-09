@@ -5,7 +5,7 @@
   The program performs a TTTR measurement based on hardcoded settings.
   The resulting event data is stored in a binary output file.
 
-  Michael Wahl, PicoQuant GmbH, August 2014
+  Michael Wahl, PicoQuant GmbH, July 2021
 
   Note: This is a console application (i.e. run in Windows cmd box)
 
@@ -15,7 +15,7 @@
   
   Tested with the following compilers:
 
-  - MS Visual C# 2010 (Windows 32/64 bit)
+  - MS Visual C# 2019 (Windows 32/64 bit)
   - Mono 3.2.3 (Windows/Linux 32/64 bit)
 
 ************************************************************************/
@@ -176,7 +176,7 @@ class TTTRMode
     		BinaryWriter bw = null;
 
 
-		Console.WriteLine ("HydraHarp 400     HHLib Demo Application    M. Wahl, PicoQuant GmbH, 2014");
+		Console.WriteLine ("HydraHarp 400     HHLib Demo Application    M. Wahl, PicoQuant GmbH, 2021");
 		Console.WriteLine ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
 

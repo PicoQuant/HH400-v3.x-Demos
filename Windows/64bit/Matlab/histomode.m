@@ -3,7 +3,7 @@
 % The program performs a measurement based on hard coded settings.
 % The resulting histogram (65536 channels) is stored in an ASCII output file.
 %
-% Michael Wahl, PicoQuant, August 2014
+% Michael Wahl, PicoQuant, July 2021
 
 
 % Constants from hhdefin.h
@@ -43,7 +43,7 @@ SyncDiv       = 8;       %  you can change this
 Binning       = 0;       %  you can change this
 Tacq          = 1000;    %  you can change this      
     
-fprintf('\nHydraHarp 400 HHLib Demo Application             PicoQuant 2014\n');
+fprintf('\nHydraHarp 400 HHLib Demo Application             PicoQuant 2021\n');
 
 if (~libisloaded('HHlib'))    
     %Attention: The header file name given below is case sensitive and must

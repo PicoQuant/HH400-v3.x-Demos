@@ -1,11 +1,16 @@
 {
   HydraHarp 400  HHLIB v3.0  Usage Demo with Delphi or Lazarus.
-  Tested with Lazarus 1.2.4 + FPC 2.6.4 and Delphi XE5 on Windows 7.
 
   Demo access to HydraHarp 400 Hardware via HHLIB.DLL.
   The program performs a continuous mode measurement based on hardcoded settings.
 
-  Michael Wahl, Joerg Hansen, PicoQuant GmbH, August 2014
+  Tested with
+  - Delphi 10.2 on Windows 10
+  - Lazarus 2.0.12 / fpc 3.2.0 on Windows 10
+  - Lazarus 1.8.4 / fpc 3.0.4 on Windows 8
+  - Lazarus 2.0.8 / fpc 3.0.4 on Linux
+
+  Michael Wahl, PicoQuant GmbH, July 2021
 
   Note: This is a console application (i.e. run in Windows cmd box)
 
@@ -16,7 +21,9 @@
 
 program contmode;
 
+{$ifndef LINUX}
 {$APPTYPE CONSOLE}
+{$endif}
 
 uses
   {$ifdef fpc}
@@ -144,7 +151,7 @@ var
 
 begin
   writeln;
-  writeln ('HydraHarp 400 HHLib Usage Demo                      PicoQuant GmbH, 2014');
+  writeln ('HydraHarp 400 HHLib Usage Demo                      PicoQuant GmbH, 2021');
   writeln ('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
   iRetCode := HH_GetLibraryVersion (pcLibVers);
   if iRetCode <> HH_ERROR_NONE

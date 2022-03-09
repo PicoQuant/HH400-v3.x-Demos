@@ -2,7 +2,7 @@ Unit HHLib;
 {                                                               }
 { Functions exported by the HydraHarp programming library HHLib }
 {                                                               }
-{ Ver. 3.0.0.2     March 2019                                    }
+{ Ver. 3.0.0.3     July 2021                                    }
 {                                                               }
 
 interface

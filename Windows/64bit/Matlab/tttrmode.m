@@ -3,7 +3,7 @@
 % The program performs a TTTR measurement based on hardcoded settings.
 % The resulting data stream is stored in a binary output file.
 %
-% Michael Wahl, PicoQuant, August 2014
+% Michael Wahl, PicoQuant, July 2021
 
 
 % Constants from hhdefin.h
@@ -43,7 +43,7 @@ Binning       = 0;       %  you can change this
 Tacq          = 10000;   %  you can change this       
     
 
-fprintf('\nHydraHarp 400 HHLib.DLL Demo Application             PicoQuant 2014\n');
+fprintf('\nHydraHarp 400 HHLib.DLL Demo Application             PicoQuant 2021\n');
 
 if (~libisloaded('HHlib'))    
     %Attention: The header file name given below is case sensitive and must

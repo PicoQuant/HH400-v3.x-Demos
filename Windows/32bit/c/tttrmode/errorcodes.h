@@ -1,4 +1,4 @@
-/* HHLib Ver. 3.0.0.2     March 2019 */
+/* HHLib Ver. 3.0.0.3     July 2021 */
 
 #define HH_ERROR_NONE						   0 
 									

@@ -3,6 +3,7 @@
 # The resulting histogram (65536 channels) is stored in an ASCII output file.
 #
 # Keno Goertz, PicoQuant GmbH, February 2018
+# Tested with HHLib v.3.0.0.3 and Python 3.9.5, Michael Wahl, July 2021
 
 import time
 import ctypes as ct
