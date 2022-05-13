@@ -2,7 +2,7 @@ Unit HHLib;
 {                                                               }
 { Functions exported by the HydraHarp programming library HHLib }
 {                                                               }
-{ Ver. 3.0.0.3     July 2021                                    }
+{ Ver. 3.0.0.4     April 2022                                   }
 {                                                               }
 
 interface
@@ -44,14 +44,14 @@ const
   MODE_T3        =          3;
   MODE_CONT      =          8;
 
-  MEASCTRL_SINGLESHOT_CTC     = 0;   //default
-  MEASCTRL_C1_GATE		        = 1;
-  MEASCTRL_C1_START_CTC_STOP  = 2;
-  MEASCTRL_C1_START_C2_STOP	  = 3;
+  MEASCTRL_SINGLESHOT_CTC         = 0;   //default
+  MEASCTRL_C1_GATED               = 1;
+  MEASCTRL_C1_START_CTC_STOP      = 2;
+  MEASCTRL_C1_START_C2_STOP       = 3;
   //continuous mode only
   MEASCTRL_CONT_C1_GATED          = 4;
-  MEASCTRL_CONT_C1_START_CTC_STOP	= 5;
-  MEASCTRL_CONT_CTC_RESTART	      = 6;
+  MEASCTRL_CONT_C1_START_CTC_STOP = 5;
+  MEASCTRL_CONT_CTC_RESTART	  = 6;
 
   EDGE_RISING    = 1;
   EDGE_FALLING   = 0;
@@ -98,7 +98,7 @@ var
   pcWtext        : pAnsiChar;
   strWtext       : array [0.. 16384] of AnsiChar;
 
-  iDevIdx        : array [0..MAXDEVNUM-1] of LongInt;
+  DevIdx        : array [0..MAXDEVNUM-1] of LongInt;
 
 
 function  HH_GetLibraryVersion     (vers : pAnsiChar) : LongInt;
@@ -171,6 +171,8 @@ function  HH_CTCStatus             (devidx : LongInt; var ctcstatus : LongInt) :
 function  HH_GetHistogram          (devidx : LongInt; var chcount : LongWord; channel : LongInt; clear : LongInt) : LongInt;
   stdcall; external LIB_NAME;
 function  HH_GetResolution         (devidx : LongInt; var resolution : Double) : LongInt;
+  stdcall; external LIB_NAME;
+function  HH_GetSyncPeriod         (devidx : LongInt; var period  : Double) : longInt;
   stdcall; external LIB_NAME;
 function  HH_GetSyncRate           (devidx : LongInt; var syncrate : LongInt) : LongInt;
   stdcall; external LIB_NAME;
@@ -309,4 +311,4 @@ initialization
   pcWtext    := pAnsiChar(@strWtext[0]);
 finalization
   HH_CloseAllDevices;
-end.
+end.

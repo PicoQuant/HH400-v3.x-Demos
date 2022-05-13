@@ -3,7 +3,7 @@
 	HHLib programming library for HydraHarp 400
 	PicoQuant GmbH, 
 
-    Ver. 3.0.0.3     July 2021
+    Ver. 3.0.0.4     April 2022
 */
 
 

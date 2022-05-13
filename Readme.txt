@@ -1,6 +1,6 @@
 HHLib Programming Library for HydraHarp 400 
-Version 3.0.0.3
-PicoQuant GmbH - July 2021
+Version 3.0.0.4
+PicoQuant GmbH - April 2022
 
 
 Introduction
@@ -14,7 +14,17 @@ The programming library is a DLL with demos for various programming
 languages. Please refer to the manual (PDF) for instructions.
 
 
-What's new in this Version
+What's new in version 3.0.0.4
+
+- Solves an issue where the library could not be loaded in LabVIEW 
+  and some other programming environments due to an unfortunate 
+  restriction of the load address. 
+- Provides some more advanced demos in C, C#, Python and Delphi, 
+  most importantly some new demos for instant processing of TTTR data
+- Now officially supporting Windows 11.
+
+
+What was new in version 3.0.0.3
 
 Version 3.0.0.3 is a bugfix release addressing the following issues: 
 - Fixes a bug where warnings were wrong or missing upon change of 
@@ -28,7 +38,7 @@ Please read the notes for version 2.0 below if you are upgrading
 from a library version prior to 2.0! 
 
 
-What's new in version 3.0.0.2
+What was new in version 3.0.0.2
 
 Version 3.0.0.2 was a bugfix release addressing the following issues:
 - Fixes a firmware bug in continuous mode where the hardware controlled 
@@ -45,7 +55,7 @@ Please read the notes for version 2.0 below if you are upgrading
 from a library version prior to 2.0! 
 
 
-What's new in version 3.0.0.1
+What was new in version 3.0.0.1
 
 Version 3.0.0.1 fixes an incompatibility with USB 3.0 ports of Intel Z97 
 chipsets. It also provides an updated device driver to meet new Windows 
@@ -55,14 +65,14 @@ Please read the notes for version 2.0 below if you are upgrading
 from a library version prior to 2.0! 
 
 
-What's new in version 3.0
+What was new in version 3.0
 
 Version 3.0 is an improvement release that supersedes versions 2.x. 
 Please upgrade if you installed version 2.x. If you are still using 
 version 1.x, please read the following notes carefully.
 
 
-What's new in version 2.0 versus 1.2
+What was new in version 2.0 versus 1.2
 
 - Supports HydraHarp devices with USB 3.0 interface 
 - Supports time bin widths of up to 33.5 µs and histogram time spans 

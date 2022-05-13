@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="9"/>
+    <Version Value="10"/>
     <PathDelim Value="\"/>
     <General>
       <Flags>
@@ -10,11 +10,7 @@
         <LRSInOutputDirectory Value="False"/>
       </Flags>
       <MainUnit Value="0"/>
-      <ActiveWindowIndexAtStart Value="0"/>
     </General>
-    <VersionInfo>
-      <StringTable ProductVersion=""/>
-    </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="default" Default="True"/>
     </BuildModes>
@@ -34,28 +30,24 @@
       <Unit0>
         <Filename Value="histomode.dpr"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="histomode"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="0"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="99"/>
-        <CursorPos X="38" Y="120"/>
+        <TopLine Value="118"/>
+        <CursorPos X="7" Y="136"/>
         <UsageCount Value="23"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="hhlib.pas"/>
+        <IsPartOfProject Value="True"/>
         <UnitName Value="HHLib"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
         <CursorPos X="5" Y="63"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="20"/>
         <Loaded Value="True"/>
       </Unit1>
     </Units>
-    <JumpHistory Count="9" HistoryIndex="8">
+    <JumpHistory Count="10" HistoryIndex="9">
       <Position1>
         <Filename Value="histomode.dpr"/>
         <Caret Line="310" Column="17" TopLine="282"/>
@@ -66,19 +58,17 @@
       </Position2>
       <Position3>
         <Filename Value="histomode.dpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
       </Position3>
       <Position4>
         <Filename Value="histomode.dpr"/>
-        <Caret Line="15" Column="36" TopLine="1"/>
+        <Caret Line="15" Column="36"/>
       </Position4>
       <Position5>
         <Filename Value="histomode.dpr"/>
-        <Caret Line="1" Column="1" TopLine="1"/>
       </Position5>
       <Position6>
         <Filename Value="histomode.dpr"/>
-        <Caret Line="17" Column="35" TopLine="1"/>
+        <Caret Line="17" Column="35"/>
       </Position6>
       <Position7>
         <Filename Value="histomode.dpr"/>
@@ -92,6 +82,10 @@
         <Filename Value="histomode.dpr"/>
         <Caret Line="225" Column="84" TopLine="192"/>
       </Position9>
+      <Position10>
+        <Filename Value="histomode.dpr"/>
+        <Caret Line="13" Column="51"/>
+      </Position10>
     </JumpHistory>
   </ProjectOptions>
   <CompilerOptions>
@@ -112,7 +106,6 @@
       <Verbosity>
         <ShowHints Value="False"/>
       </Verbosity>
-      <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
   <Debugging>
@@ -125,5 +118,4 @@
       </Item2>
     </Exceptions>
   </Debugging>
-  <EditorMacros Count="0"/>
 </CONFIG>

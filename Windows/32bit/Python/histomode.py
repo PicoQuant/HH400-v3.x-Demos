@@ -1,9 +1,17 @@
 # Demo for access to HydraHarp 400 Hardware via HHLIB.DLL v 3.0.
+#
 # The program performs a measurement based on hard coded settings.
 # The resulting histogram (65536 channels) is stored in an ASCII output file.
 #
 # Keno Goertz, PicoQuant GmbH, February 2018
-# Tested with HHLib v.3.0.0.3 and Python 3.9.5, Michael Wahl, July 2021
+# Stefan Eilers, PicoQuant GmbH, April 2022
+#
+# Tested with HHLib v.3.0.0.4 and Python 3.9.7
+#
+# Note: This is a console application (i.e. run in Windows cmd box).
+#
+# Note: At the API level channel numbers are indexed 0..N-1
+#       where N is the number of channels the device has.
 
 import time
 import ctypes as ct
@@ -14,47 +22,47 @@ import sys
 if sys.version_info[0] < 3:
     print("[Warning] Python 2 is not fully supported. It might work, but "
           "use Python 3 if you encounter errors.\n")
-    raw_input("press RETURN to continue"); print
+    raw_input("Press RETURN to continue"); print
     input = raw_input
 
 # From hhdefin.h
-LIB_VERSION = "3.0"
-MAXDEVNUM = 8
-MODE_HIST = 0
-MAXLENCODE = 6
-HHMAXINPCHAN = 8
-MAXHISTLEN = 65536
+LIB_VERSION   = "3.0"
+MAXDEVNUM     = 8
+MODE_HIST     = 0
+MAXLENCODE    = 6
+HHMAXINPCHAN  = 8
+MAXHISTLEN    = 65536
 FLAG_OVERFLOW = 0x001
 
 # Measurement parameters, these are hardcoded since this is just a demo
-binning = 0 # you can change this
-offset = 0
-tacq = 1000 # Measurement time in millisec, you can change this
-syncDivider = 1 # you can change this 
-syncCFDZeroCross = 10 # you can change this (in mV)
-syncCFDLevel = 50 # you can change this (in mV)
-syncChannelOffset = -5000 # you can change this (in ps, like a cable delay)
-inputCFDZeroCross = 10 # you can change this (in mV)
-inputCFDLevel = 50 # you can change this (in mV)
-inputChannelOffset = 0 # you can change this (in ps, like a cable delay)
+binning            = 0 # You can change this
+offset             = 0
+tacq               = 1000 # Measurement time in millisec, you can change this
+syncDivider        = 1 # You can change this 
+syncCFDZeroCross   = 10 # You can change this (in mV)
+syncCFDLevel       = 50 # You can change this (in mV)
+syncChannelOffset  = -5000 # You can change this (in ps, like a cable delay)
+inputCFDZeroCross  = 10 # You can change this (in mV)
+inputCFDLevel      = 50 # You can change this (in mV)
+inputChannelOffset = 0 # You can change this (in ps, like a cable delay)
 cmd = 0
 
 # Variables to store information read from DLLs
-counts = [(ct.c_uint * MAXHISTLEN)() for i in range(0, HHMAXINPCHAN)]
-dev = []
-libVersion = ct.create_string_buffer(b"", 8)
-hwSerial = ct.create_string_buffer(b"", 8)
-hwPartno = ct.create_string_buffer(b"", 8)
-hwVersion = ct.create_string_buffer(b"", 8)
-hwModel = ct.create_string_buffer(b"", 16)
-errorString = ct.create_string_buffer(b"", 40)
-numChannels = ct.c_int()
-histLen = ct.c_int()
-resolution = ct.c_double()
-syncRate = ct.c_int()
-countRate = ct.c_int()
-flags = ct.c_int()
-warnings = ct.c_int()
+counts       = [(ct.c_uint * MAXHISTLEN)() for i in range(0, HHMAXINPCHAN)]
+dev          = []
+libVersion   = ct.create_string_buffer(b"", 8)
+hwSerial     = ct.create_string_buffer(b"", 8)
+hwPartno     = ct.create_string_buffer(b"", 8)
+hwVersion    = ct.create_string_buffer(b"", 8)
+hwModel      = ct.create_string_buffer(b"", 16)
+errorString  = ct.create_string_buffer(b"", 40)
+numChannels  = ct.c_int()
+histLen      = ct.c_int()
+resolution   = ct.c_double()
+syncRate     = ct.c_int()
+countRate    = ct.c_int()
+flags        = ct.c_int()
+warnings     = ct.c_int()
 warningstext = ct.create_string_buffer(b"", 16384)
 
 if os.name == "nt":
@@ -65,7 +73,7 @@ else:
 def closeDevices():
     for i in range(0, MAXDEVNUM):
         hhlib.HH_CloseDevice(ct.c_int(i))
-    exit(0)
+    sys.exit(0)
 
 def tryfunc(retcode, funcName, measRunning=False):
     if retcode < 0:
@@ -79,7 +87,7 @@ print("Library version is %s" % libVersion.value.decode("utf-8"))
 if libVersion.value.decode("utf-8") != LIB_VERSION:
     print("Warning: The application was built for version %s" % LIB_VERSION)
 
-outputfile = open("histomode.out", "w+")
+outputfile = open("histomodeout.txt", "w+")
 
 outputfile.write("Binning           : %d\n" % binning)
 outputfile.write("Offset            : %d\n" % offset)
@@ -123,42 +131,37 @@ tryfunc(hhlib.HH_Initialize(ct.c_int(dev[0]), ct.c_int(MODE_HIST), ct.c_int(0)),
 # Only for information
 tryfunc(hhlib.HH_GetHardwareInfo(dev[0], hwModel, hwPartno, hwVersion),\
         "GetHardwareInfo")
+    
 print("Found Model %s Part no %s Version %s" % (hwModel.value.decode("utf-8"),\
       hwPartno.value.decode("utf-8"), hwVersion.value.decode("utf-8")))
 
 tryfunc(hhlib.HH_GetNumOfInputChannels(ct.c_int(dev[0]), byref(numChannels)),\
-        "GetNumOfInputChannels")
+        "GetNumOfInputChannels")    
 print("Device has %i input channels." % numChannels.value)
 
 print("\nCalibrating...")
 tryfunc(hhlib.HH_Calibrate(ct.c_int(dev[0])), "Calibrate")
 tryfunc(hhlib.HH_SetSyncDiv(ct.c_int(dev[0]), ct.c_int(syncDivider)), "SetSyncDiv")
 
-tryfunc(
-    hhlib.HH_SetSyncCFD(ct.c_int(dev[0]), ct.c_int(syncCFDLevel),\
-                        ct.c_int(syncCFDZeroCross)),\
-    "SetSyncCFD"
-)
+tryfunc(hhlib.HH_SetSyncCFD(ct.c_int(dev[0]), ct.c_int(syncCFDLevel),\
+                            ct.c_int(syncCFDZeroCross)),\
+        "SetSyncCFD")
 
 tryfunc(hhlib.HH_SetSyncChannelOffset(ct.c_int(dev[0]), ct.c_int(syncChannelOffset)),\
         "SetSyncChannelOffset")
 
-# we use the same input settings for all channels, you can change this
+# We use the same input settings for all channels, you can change this
 for i in range(0, numChannels.value):
-    tryfunc(
-        hhlib.HH_SetInputCFD(ct.c_int(dev[0]), ct.c_int(i), ct.c_int(inputCFDLevel),\
-                             ct.c_int(inputCFDZeroCross)),\
-        "SetInputCFD"
-    )
+    tryfunc(hhlib.HH_SetInputCFD(ct.c_int(dev[0]), ct.c_int(i), ct.c_int(inputCFDLevel),\
+                                 ct.c_int(inputCFDZeroCross)),\
+            "SetInputCFD")
 
-    tryfunc(
-        hhlib.HH_SetInputChannelOffset(ct.c_int(dev[0]), ct.c_int(i),\
+    tryfunc(hhlib.HH_SetInputChannelOffset(ct.c_int(dev[0]), ct.c_int(i),\
                                        ct.c_int(inputChannelOffset)),\
-        "SetInputChannelOffset"
-    )
+        "SetInputChannelOffset")
 
 tryfunc(hhlib.HH_SetHistoLen(ct.c_int(dev[0]), ct.c_int(MAXLENCODE), byref(histLen)),\
-        "SetHistoLen")
+        "SetHistoLen")    
 print("Histogram length is %d" % histLen.value)
 
 tryfunc(hhlib.HH_SetBinning(ct.c_int(dev[0]), ct.c_int(binning)), "SetBinning")
@@ -175,10 +178,10 @@ print("\nSyncrate=%1d/s" % syncRate.value)
 
 for i in range(0, numChannels.value):
     tryfunc(hhlib.HH_GetCountRate(ct.c_int(dev[0]), ct.c_int(i), byref(countRate)),\
-            "GetCountRate")
+            "GetCountRate")      
     print("Countrate[%1d]=%1d/s" % (i, countRate.value))
 
-# new from v1.2: after getting the count rates you can check for warnings
+# New from v1.2: after getting the count rates you can check for warnings
 tryfunc(hhlib.HH_GetWarnings(ct.c_int(dev[0]), byref(warnings)), "GetWarnings")
 if warnings.value != 0:
     hhlib.HH_GetWarningsText(ct.c_int(dev[0]), warningstext, warnings)
@@ -201,7 +204,7 @@ while cmd != "q":
                 "GetCountRate")
         print("Countrate[%1d]=%1d/s" % (i, countRate.value))
 
-    # here you could check for warnings again
+    # Here you could check for warnings again
     
     tryfunc(hhlib.HH_StartMeas(ct.c_int(dev[0]), ct.c_int(tacq)), "StartMeas")
     print("\nMeasuring for %1d milliseconds..." % tacq)
@@ -214,11 +217,9 @@ while cmd != "q":
     tryfunc(hhlib.HH_StopMeas(ct.c_int(dev[0])), "StopMeas")
     
     for i in range(0, numChannels.value):
-        tryfunc(
-            hhlib.HH_GetHistogram(ct.c_int(dev[0]), byref(counts[i]),\
+        tryfunc(hhlib.HH_GetHistogram(ct.c_int(dev[0]), byref(counts[i]),\
                                   ct.c_int(i), ct.c_int(0)),\
-            "GetHistogram"
-        )
+            "GetHistogram")
 
         integralCount = 0
         for j in range(0, histLen.value):

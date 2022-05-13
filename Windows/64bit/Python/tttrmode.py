@@ -1,15 +1,24 @@
 # Demo for access to HydraHarp 400 Hardware via HHLIB.DLL v 3.0.
+#
 # The program performs a measurement based on hard coded settings.
 # The resulting data is stored in a binary output file.
 #
 # Keno Goertz, PicoQuant GmbH, February 2018
-# Tested with HHLib v.3.0.0.3 and Python 3.9.5, Michael Wahl, July 2021
+# Stefan Eilers, PicoQuant GmbH, April 2022
+#
+# Tested with HHLib v.3.0.0.4 and Python 3.9.7
+#
+# Note: This is a console application (i.e. run in Windows cmd box).
+#
+# Note: At the API level channel numbers are indexed 0..N-1.
+#       where N is the number of channels the device has.
+#
+# Note: This demo writes only raw event data to the output file.
 
 import time
 import ctypes as ct
 from ctypes import byref
 import sys
-import struct
 import os
 
 if sys.version_info[0] < 3:
@@ -19,46 +28,46 @@ if sys.version_info[0] < 3:
     input = raw_input
 
 # From hhdefin.h
-LIB_VERSION = "3.0"
-MAXDEVNUM = 8
-MODE_T2 = 2
-MODE_T3 = 3
-MAXLENCODE = 6
-HHMAXINPCHAN = 8
-TTREADMAX = 131072
+LIB_VERSION   = "3.0"
+MAXDEVNUM     = 8
+MODE_T2       = 2
+MODE_T3       = 3
+MAXLENCODE    = 6
+HHMAXINPCHAN  = 8
+TTREADMAX     = 131072
 FLAG_OVERFLOW = 0x0001
 FLAG_FIFOFULL = 0x0002
 
 # Measurement parameters, these are hardcoded since this is just a demo
-mode = MODE_T2 # set T2 or T3 here, observe suitable Syncdivider and Range!
-binning = 0 # you can change this, meaningful only in T3 mode
-offset = 0 # you can change this, meaningful only in T3 mode
-tacq = 1000 # Measurement time in millisec, you can change this
-syncDivider = 1 # you can change this, observe mode! READ MANUAL!
-syncCFDZeroCross = 10 # you can change this (in mV)
-syncCFDLevel = 50 # you can change this (in mV)
-syncChannelOffset = -5000 # you can change this (in ps, like a cable delay)
-inputCFDZeroCross = 10 # you can change this (in mV)
-inputCFDLevel = 50 # you can change this (in mV)
-inputChannelOffset = 0 # you can change this (in ps, like a cable delay)
+mode               = MODE_T3 # Set T2 or T3 here, observe suitable Syncdivider and Range!
+binning            = 0 # You can change this, meaningful only in T3 mode
+offset             = 0 # You can change this, meaningful only in T3 mode
+tacq               = 250 # Measurement time in millisec, you can change this
+syncDivider        = 1 # You can change this, observe mode! READ MANUAL!
+syncCFDZeroCross   = 10 # You can change this (in mV)
+syncCFDLevel       = 50 # You can change this (in mV)
+syncChannelOffset  = -5000 # You can change this (in ps, like a cable delay)
+inputCFDZeroCross  = 10 # You can change this (in mV)
+inputCFDLevel      = 50 # You can change this (in mV)
+inputChannelOffset = 0 # You can change this (in ps, like a cable delay)
 
 # Variables to store information read from DLLs
-buffer = (ct.c_uint * TTREADMAX)()
-dev = []
-libVersion = ct.create_string_buffer(b"", 8)
-hwSerial = ct.create_string_buffer(b"", 8)
-hwPartno = ct.create_string_buffer(b"", 8)
-hwVersion = ct.create_string_buffer(b"", 8)
-hwModel = ct.create_string_buffer(b"", 16)
-errorString = ct.create_string_buffer(b"", 40)
-numChannels = ct.c_int()
-resolution = ct.c_double()
-syncRate = ct.c_int()
-countRate = ct.c_int()
-flags = ct.c_int()
-nRecords = ct.c_int()
-ctcstatus = ct.c_int()
-warnings = ct.c_int()
+buffer       = (ct.c_uint * TTREADMAX)()
+dev          = []
+libVersion   = ct.create_string_buffer(b"", 8)
+hwSerial     = ct.create_string_buffer(b"", 8)
+hwPartno     = ct.create_string_buffer(b"", 8)
+hwVersion    = ct.create_string_buffer(b"", 8)
+hwModel      = ct.create_string_buffer(b"", 16)
+errorString  = ct.create_string_buffer(b"", 40)
+numChannels  = ct.c_int()
+resolution   = ct.c_double()
+syncRate     = ct.c_int()
+countRate    = ct.c_int()
+flags        = ct.c_int()
+nRecords     = ct.c_int()
+ctcstatus    = ct.c_int()
+warnings     = ct.c_int()
 warningstext = ct.create_string_buffer(b"", 16384)
 
 if os.name == "nt":
@@ -69,7 +78,7 @@ else:
 def closeDevices():
     for i in range(0, MAXDEVNUM):
         hhlib.HH_CloseDevice(ct.c_int(i))
-    exit(0)
+    sys.exit(0)
 
 def stoptttr():
     retcode = hhlib.HH_StopMeas(ct.c_int(dev[0]))
@@ -130,7 +139,7 @@ if len(dev) < 1:
 print("Using device #%1d" % dev[0])
 print("\nInitializing the device...")
 
-# with internal clock
+# With internal clock
 tryfunc(hhlib.HH_Initialize(ct.c_int(dev[0]), ct.c_int(mode), ct.c_int(0)),\
         "Initialize")
 
@@ -148,28 +157,22 @@ print("\nCalibrating...")
 tryfunc(hhlib.HH_Calibrate(ct.c_int(dev[0])), "Calibrate")
 tryfunc(hhlib.HH_SetSyncDiv(ct.c_int(dev[0]), ct.c_int(syncDivider)), "SetSyncDiv")
 
-tryfunc(
-    hhlib.HH_SetSyncCFD(ct.c_int(dev[0]), ct.c_int(syncCFDLevel),
-                        ct.c_int(syncCFDZeroCross)),\
-    "SetSyncCFD"
-)
+tryfunc(hhlib.HH_SetSyncCFD(ct.c_int(dev[0]), ct.c_int(syncCFDLevel),
+                            ct.c_int(syncCFDZeroCross)),\
+        "SetSyncCFD")
 
 tryfunc(hhlib.HH_SetSyncChannelOffset(ct.c_int(dev[0]), ct.c_int(syncChannelOffset)),\
         "SetSyncChannelOffset")
 
-# we use the same input settings for all channels, you can change this
+# We use the same input settings for all channels, you can change this
 for i in range(0, numChannels.value):
-    tryfunc(
-        hhlib.HH_SetInputCFD(ct.c_int(dev[0]), ct.c_int(i), ct.c_int(inputCFDLevel),\
-                             ct.c_int(inputCFDZeroCross)),\
-        "SetInputCFD"
-    )
+    tryfunc(hhlib.HH_SetInputCFD(ct.c_int(dev[0]), ct.c_int(i), ct.c_int(inputCFDLevel),\
+                                 ct.c_int(inputCFDZeroCross)),\
+            "SetInputCFD")
 
-    tryfunc(
-        hhlib.HH_SetInputChannelOffset(ct.c_int(dev[0]), ct.c_int(i),\
-                                       ct.c_int(inputChannelOffset)),\
-        "SetInputChannelOffset"
-    )
+    tryfunc(hhlib.HH_SetInputChannelOffset(ct.c_int(dev[0]), ct.c_int(i),\
+                                           ct.c_int(inputChannelOffset)),\
+            "SetInputChannelOffset")
 
 # Meaningful only in T3 mode
 if mode == MODE_T3:
@@ -178,8 +181,8 @@ if mode == MODE_T3:
     tryfunc(hhlib.HH_GetResolution(ct.c_int(dev[0]), byref(resolution)), "GetResolution")
     print("Resolution is %1.1lfps" % resolution.value)
 
-# Note: after Init or SetSyncDiv you must allow >100 ms for valid  count rate readings
-time.sleep(0.2)
+# Note: After Init or SetSyncDiv you must allow >100 ms for valid  count rate readings
+time.sleep(0.4)
 
 tryfunc(hhlib.HH_GetSyncRate(ct.c_int(dev[0]), byref(syncRate)), "GetSyncRate")
 print("\nSyncrate=%1d/s" % syncRate.value)
@@ -202,11 +205,9 @@ while True:
         print("\nFiFo Overrun!")
         stoptttr()
     
-    tryfunc(
-        hhlib.HH_ReadFiFo(ct.c_int(dev[0]), byref(buffer), TTREADMAX,\
-                          byref(nRecords)),\
-        "ReadFiFo", measRunning=True
-    )
+    tryfunc(hhlib.HH_ReadFiFo(ct.c_int(dev[0]), byref(buffer), TTREADMAX,\
+                              byref(nRecords)),\
+            "ReadFiFo", measRunning=True)
 
     if nRecords.value > 0:
         # We could just iterate through our buffer with a for loop, however,
@@ -224,7 +225,7 @@ while True:
         if ctcstatus.value > 0: 
             print("\nDone")
             stoptttr()
-    # within this loop you can also read the count rates if needed.
+    # Within this loop you can also read the count rates if needed.
 
 closeDevices()
 outputfile.close()

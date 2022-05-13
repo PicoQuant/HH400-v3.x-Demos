@@ -1,14 +1,9 @@
 /* Functions exported by the HydraHarp programming library HHLib*/
 
-/* Ver. 3.0.0.3     July 2021 */
-#pragma once
+/* Ver. 3.0.0.4     April 2022 */
 
 #ifndef _WIN32
 #define _stdcall
-#endif
-
-#ifdef __cplusplus
-extern "C" {
 #endif
 
 extern int _stdcall HH_GetLibraryVersion(char* vers);
@@ -74,7 +69,3 @@ extern int _stdcall HH_ReadFiFo(int devidx, unsigned int* buffer, int count, int
 extern int _stdcall HH_GetContModeBlock(int devidx, void* buffer, int* nbytesreceived);
 
 
-
-#ifdef __cplusplus
-}
-  #endif

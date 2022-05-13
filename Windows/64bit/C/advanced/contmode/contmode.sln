@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29409.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "contmode", "contmode.vcxproj", "{CE7F288E-FC2D-9328-0175-CCAFB8BFACDD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE7F288E-FC2D-9328-0175-CCAFB8BFACDD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CE7F288E-FC2D-9328-0175-CCAFB8BFACDD}.Debug|x64.ActiveCfg = Debug|x64
+		{CE7F288E-FC2D-9328-0175-CCAFB8BFACDD}.Debug|x64.Build.0 = Debug|x64
+		{CE7F288E-FC2D-9328-0175-CCAFB8BFACDD}.Release|Win32.ActiveCfg = Release|Win32
+		{CE7F288E-FC2D-9328-0175-CCAFB8BFACDD}.Release|x64.ActiveCfg = Release|x64
+		{CE7F288E-FC2D-9328-0175-CCAFB8BFACDD}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {12335603-54A8-454F-B4BC-79A51051F971}
+	EndGlobalSection
+EndGlobal

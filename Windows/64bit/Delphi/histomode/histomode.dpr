@@ -5,13 +5,13 @@
   The program performs a histogram measurement based on hardcoded settings.
   The resulting histogram (65536 time bins) is stored in an ASCII output file.
 
+  Andreas Podubrin, Michael Wahl, PicoQuant GmbH, July 2021
+  Stefan Eilers , PicoQuant GmbH, April 2022
+
   Tested with
   - Delphi 10.2 on Windows 10
   - Lazarus 2.0.12 / fpc 3.2.0 on Windows 10
-  - Lazarus 1.8.4 / fpc 3.0.4 on Windows 8
-  - Lazarus 2.0.8 / fpc 3.0.4 on Linux
-
-  Andreas Podubrin, Michael Wahl, PicoQuant GmbH, July 2021
+  - Lazarus 2.0.8 / fpc 3.0.4 on Ubuntu 20.04.4 LTS
 
   Note: This is a console application (i.e. run in Windows cmd box)
 
@@ -31,410 +31,408 @@ uses
   {$else}
   System.SysUtils,
   System.Ansistrings,
-  {$endif}
+  {$endif }
   hhlib in 'hhlib.pas';
 
-
 type
-  THistogramCounts   = array [0..MAXHISTLEN-1] of longword;
-
+  THistogramCounts   = array[0..MAXHISTLEN - 1] of LongWord;
 
 var
-  iRetCode           : longint;
-  outf               : Text;
-  i                  : integer;
-  iFound             : integer =   0;
+  RetCode            : LongInt;
+  OutF               : Text;
+  i                  : Integer;
+  Found              : Integer =   0;
 
-  iMode              : longint =    MODE_HIST ;
-  iBinning           : longint =     0; // you can change this (meaningless in T2 mode)
-  iOffset            : longint =     0; // normally no need to change this
-  iTAcq              : longint =  1000; // you can change this, unit is millisec
-  iSyncDivider       : longint =     1; // you can change this
-  iSyncCFDZeroCross  : longint =    10; // you can change this (mV)
-  iSyncCFDLevel      : longint =    50; // you can change this (mV)
-  iSyncChannelOffset : longint = -5000; // you can change this (like a cable delay)
-  iInputCFDZeroCross : longint =    10; // you can change this (mV)
-  iInputCFDLevel     : longint =    50; // you can change this (mV)
-  iInputChannelOffset: longint =     0; // you can change this (like a cable delay)
+  Mode               : LongInt =    MODE_HIST ;
+  Binning            : LongInt =     0; // You can change this (meaningless in T2 mode)
+  Offset             : LongInt =     0; // Normally no need to change this
+  TAcq               : LongInt =  1000; // You can change this, unit is millisec
+  SyncDivider        : LongInt =     1; // You can change this
+  SyncCFDZeroCross   : LongInt =    10; // You can change this (mV)
+  SyncCFDLevel       : LongInt =    50; // You can change this (mV)
+  SyncChannelOffset  : LongInt = -5000; // You can change this (like a cable delay)
+  InputCFDZeroCross  : LongInt =    10; // You can change this (mV)
+  InputCFDLevel      : LongInt =    50; // You can change this (mV)
+  InputChannelOffset : LongInt =     0; // You can change this (like a cable delay)
 
-  iNumChannels       : longint;
-  iHistoBin          : longint;
-  iChanIdx           : longint;
-  iHistLen           : longint;
-  dResolution        : double;
-  iSyncRate          : longint;
-  iCountRate         : longint;
-  iCTCStatus         : longint;
-  dIntegralCount     : double;
-  iFlags             : longint;
-  iWarnings          : longint;
-  cCmd               : char    = #0;
+  NumChannels        : LongInt;
+  HistoBin           : LongInt;
+  ChanIdx            : LongInt;
+  HistLen            : LongInt;
+  Resolution         : Double;
+  SyncRate           : LongInt;
+  CountRate          : LongInt;
+  CTCStatus          : LongInt;
+  IntegralCount      : Double;
+  Flags              : LongInt;
+  Warnings           : LongInt;
+  Cmd                : Char    = #0;
 
-  Counts             : array [0..HHMAXINPCHAN-1]  of THistogramCounts;
+  Counts             : array[0..HHMAXINPCHAN - 1] of THistogramCounts;
 
-  procedure ex (iRetCode : integer);
+procedure Ex(RetCode : Integer);
+begin
+  if RetCode <> HH_ERROR_NONE then
   begin
-    if iRetCode <> HH_ERROR_NONE
-    then begin
-      HH_GetErrorString (pcErrText, iRetCode);
-      writeln ('Error ', iRetCode:3, ' = "', Trim (strErrText), '"');
-    end;
-    writeln;
-    {$I-}
-      closefile (outf);
-      IOResult();
-    {$I+}
-    writeln('press RETURN to exit');
-    readln;
-    halt (iRetCode);
+    HH_GetErrorString(pcErrText, RetCode);
+    Writeln('Error ', RetCode:3, ' = "', Trim(strErrText), '"');
   end;
+  Writeln;
+  {$I-}
+    CloseFile(OutF);
+    IOResult();
+  {$I+}
+  Writeln('Press RETURN to exit');
+  Readln;
+  Halt(RetCode);
+end;
 
 begin
-  writeln;
-  writeln ('HydraHarp 400 HHLib   Usage Demo                    PicoQuant GmbH, 2021');
-  writeln ('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-  iRetCode := HH_GetLibraryVersion (pcLibVers);
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('HH_GetLibraryVersion error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
+  Writeln;
+  Writeln('HydraHarp 400 HHLib   Usage Demo                    PicoQuant GmbH, 2022');
+  Writeln('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+  RetCode := HH_GetLibraryVersion(pcLibVers);
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('HH_GetLibraryVersion error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
   end;
-  writeln ('HHLIB version is ' + strLibVers);
-  if trim (strLibVers) <> trim (AnsiString (LIB_VERSION))
-  then
-    writeln ('Warning: The application was built for version ' + LIB_VERSION);
+  Writeln('HHLIB version is ' + strLibVers);
+  if Trim(AnsiString(strLibVers)) <> Trim(AnsiString(LIB_VERSION)) then
+    Writeln('Warning: The application was built for version ' + LIB_VERSION);
 
-  assignfile (outf, 'histomode.out');
+  AssignFile(OutF, 'histomodeout.out');
   {$I-}
-    rewrite (outf);
+    Rewrite(OutF);
   {$I+}
   if IOResult <> 0 then
   begin
-    writeln ('cannot open output file');
-    ex (HH_ERROR_NONE);
+    Writeln('Cannot open output file');
+    Ex(HH_ERROR_NONE);
   end;
 
-  writeln;
-  writeln (outf, 'Mode               : ', iMode);
-  writeln (outf, 'Binning            : ', iBinning);
-  writeln (outf, 'Offset             : ', iOffset);
-  writeln (outf, 'AcquisitionTime    : ', iTacq);
-  writeln (outf, 'SyncDivider        : ', iSyncDivider);
-  writeln (outf, 'SyncCFDZeroCross   : ', iSyncCFDZeroCross);
-  writeln (outf, 'SyncCFDLevel       : ', iSyncCFDLevel);
-  writeln (outf, 'SyncChannelOffset  : ', iSyncChannelOffset);
-  writeln (outf, 'InputCFDZeroCross  : ', iInputCFDZeroCross);
-  writeln (outf, 'InputCFDLevel      : ', iInputCFDLevel);
-  writeln (outf, 'InputChannelOffset : ', iInputChannelOffset);
+  Writeln;
+  Writeln(OutF, 'Mode               : ', Mode);
+  Writeln(OutF, 'Binning            : ', Binning);
+  Writeln(OutF, 'Offset             : ', Offset);
+  Writeln(OutF, 'AcquisitionTime    : ', TAcq);
+  Writeln(OutF, 'SyncDivider        : ', SyncDivider);
+  Writeln(OutF, 'SyncCFDZeroCross   : ', SyncCFDZeroCross);
+  Writeln(OutF, 'SyncCFDLevel       : ', SyncCFDLevel);
+  Writeln(OutF, 'SyncChannelOffset  : ', SyncChannelOffset);
+  Writeln(OutF, 'InputCFDZeroCross  : ', InputCFDZeroCross);
+  Writeln(OutF, 'InputCFDLevel      : ', InputCFDLevel);
+  Writeln(OutF, 'InputChannelOffset : ', InputChannelOffset);
 
-  writeln;
-  writeln ('Searching for HydraHarp devices...');
-  writeln ('Devidx     Status');
+  Writeln;
+  Writeln('Searching for HydraHarp devices...');
+  Writeln('Devidx     Status');
 
-  for i:=0 to MAXDEVNUM-1
-  do begin
-    iRetCode := HH_OpenDevice (i, pcHWSerNr);
-    //
-    if iRetCode = HH_ERROR_NONE
-    then begin
+  for i := 0 to MAXDEVNUM - 1 do
+  begin
+    RetCode := HH_OpenDevice(i, pcHWSerNr);
+    if RetCode = HH_ERROR_NONE then
+    begin
       // Grab any HydraHarp we can open
-      iDevIdx [iFound] := i; // keep index to devices we want to use
-      inc (iFound);
-      writeln ('   ', i, '      S/N ', strHWSerNr);
+      DevIdx[Found] := i; // Keep index to devices we want to use
+      Inc (Found);
+      Writeln('   ', i, '      S/N ', strHWSerNr);
     end
-    else begin
-      if iRetCode = HH_ERROR_DEVICE_OPEN_FAIL
-      then
-        writeln ('   ', i, '       no device')
-      else begin
-        HH_GetErrorString (pcErrText, iRetCode);
-        writeln ('   ', i, '       ', Trim (strErrText));
+    else
+    begin
+      if RetCode = HH_ERROR_DEVICE_OPEN_FAIL then
+        Writeln('   ', i, '       no device')
+      else
+      begin
+        HH_GetErrorString(pcErrText, RetCode);
+        Writeln('   ', i, '       ', Trim(strErrText));
       end;
     end;
   end;
 
-  // in this demo we will use the first HydraHarp device we found,
+  // In this demo we will use the first HydraHarp device we found,
   // i.e. iDevIdx[0].  You can also use multiple devices in parallel.
-  // you could also check for a specific serial number, so that you
+  // You could also check for a specific serial number, so that you
   // always know which physical device you are talking to.
 
-  if iFound < 1 then
+  if Found < 1 then
   begin
-    writeln ('No device available.');
-    ex (HH_ERROR_NONE);
+    Writeln('No device available.');
+    Ex(HH_ERROR_NONE);
   end;
 
-  writeln ('Using device ', iDevIdx[0]);
-  writeln ('Initializing the device...');
+  Writeln('Using device ', DevIdx[0]);
+  Writeln('Initializing the device...');
 
-  iRetCode := HH_Initialize (iDevIdx[0], iMode, 0); //Histo mode with internal clock
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('HH_Initialize error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
+  RetCode := HH_Initialize(DevIdx[0], Mode, 0); // Histo mode with internal clock
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('HH_Initialize error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
   end;
 
-  iRetCode := HH_GetHardwareInfo (iDevIdx[0], pcHWModel, pcHWPartNo, pcHWVersion); // this is only for information
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('HH_GetHardwareInfo error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
+  RetCode := HH_GetHardwareInfo(DevIdx[0], pcHWModel, pcHWPartNo, pcHWVersion); // This is only for information
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('HH_GetHardwareInfo error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
   end
   else
-    writeln ('Found Model ', strHWModel,'  Part no ', strHWPartNo,'  Version ', strHWVersion);
+    Writeln('Found Model ', strHWModel,'  Part no ', strHWPartNo,'  Version ', strHWVersion);
 
-  iRetCode := HH_GetNumOfInputChannels (iDevIdx[0], iNumChannels);
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('HH_GetNumOfInputChannels error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
+  RetCode := HH_GetNumOfInputChannels(DevIdx[0], NumChannels);
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('HH_GetNumOfInputChannels error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
   end
   else
-    writeln ('Device has ', iNumChannels, ' input channels.');
-
-  writeln;
-  writeln('Calibrating...');
-  iRetCode := HH_Calibrate (iDevIdx[0]);
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('Calibration Error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
+  begin
+    Writeln('Device has ', NumChannels, ' input channels.');
   end;
 
-  iRetCode := HH_SetSyncDiv (iDevIdx[0], iSyncDivider);
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('HH_SetSyncDiv error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
+  Writeln;
+  Writeln('Calibrating...');
+  RetCode := HH_Calibrate(DevIdx[0]);
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('Calibration Error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
   end;
 
-  iRetCode := HH_SetSyncCFD (iDevIdx[0], iSyncCFDLevel, iSyncCFDZeroCross);
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('HH_SetSyncCFD error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
+  RetCode := HH_SetSyncDiv(DevIdx[0], SyncDivider);
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('HH_SetSyncDiv error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
   end;
 
-  iRetCode := HH_SetSyncChannelOffset (iDevIdx[0], iSyncChannelOffset);
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('HH_SetSyncChannelOffset error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
+  RetCode := HH_SetSyncCFD(DevIdx[0], SyncCFDLevel, SyncCFDZeroCross);
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('HH_SetSyncCFD error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
   end;
 
-  for iChanIdx:=0 to iNumChannels-1 // we use the same input settings for all channels
-  do begin
-    iRetCode := HH_SetInputCFD (iDevIdx[0], iChanIdx, iInputCFDLevel, iInputCFDZeroCross);
-    if iRetCode <> HH_ERROR_NONE
-    then begin
-      writeln ('HH_SetInputCFD channel ', iChanIdx:2, ' error ', iRetCode:3, '. Aborted.');
-      ex (iRetCode);
+  RetCode := HH_SetSyncChannelOffset(DevIdx[0], SyncChannelOffset);
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('HH_SetSyncChannelOffset error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
+  end;
+
+  for ChanIdx := 0 to NumChannels - 1 do // We use the same input settings for all channels
+  begin
+    RetCode := HH_SetInputCFD(DevIdx[0], ChanIdx, InputCFDLevel, InputCFDZeroCross);
+    if RetCode <> HH_ERROR_NONE then
+    begin
+      Writeln('HH_SetInputCFD channel ', ChanIdx:2, ' error ', RetCode:3, '. Aborted.');
+      Ex(RetCode);
     end;
 
-    iRetCode := HH_SetInputChannelOffset (iDevIdx[0], iChanIdx, iInputChannelOffset);
-    if iRetCode <> HH_ERROR_NONE
-    then begin
-      writeln ('HH_SetInputChannelOffset channel ', iChanIdx:2, ' error ', iRetCode:3, '. Aborted.');
-      ex (iRetCode);
+    RetCode := HH_SetInputChannelOffset(DevIdx[0], ChanIdx, InputChannelOffset);
+    if RetCode <> HH_ERROR_NONE then
+    begin
+      Writeln('HH_SetInputChannelOffset channel ', ChanIdx:2, ' error ', RetCode:3, '. Aborted.');
+      Ex(RetCode);
     end;
 
-    iRetCode := HH_SetInputChannelEnable (iDevIdx[0], iChanIdx, 1);
-    if iRetCode <> HH_ERROR_NONE
-    then begin
-      writeln ('HH_SetInputChannelEnable channel ', iChanIdx:2, ' error ', iRetCode:3, '. Aborted.');
-      ex (iRetCode);
+    RetCode := HH_SetInputChannelEnable(DevIdx[0], ChanIdx, 1);
+    if RetCode <> HH_ERROR_NONE then
+    begin
+      Writeln('HH_SetInputChannelEnable channel ', ChanIdx:2, ' error ', RetCode:3, '. Aborted.');
+      Ex(RetCode);
     end;
   end;
 
 
-  iRetCode := HH_SetHistoLen (iDevIdx[0], MAXLENCODE, iHistLen);
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('HH_SetHistoLen error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
-  end;
-  writeln ('Histogram length is ', iHistLen);
-
-  iRetCode := HH_SetBinning (iDevIdx[0], iBinning);
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('HH_SetBinning error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
+  RetCode := HH_SetHistoLen(DevIdx[0], MAXLENCODE, HistLen);
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('HH_SetHistoLen error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
   end;
 
-  iRetCode := HH_SetOffset(iDevIdx[0], iOffset);
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('HH_SetOffset error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
+  Writeln('Histogram length is ', HistLen);
+
+  RetCode := HH_SetBinning(DevIdx[0], Binning);
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('HH_SetBinning error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
   end;
 
-  iRetCode := HH_GetResolution (iDevIdx[0], dResolution);
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('HH_GetResolution error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
+  RetCode := HH_SetOffset(DevIdx[0], Offset);
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('HH_SetOffset error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
   end;
-  writeln ('Resolution is ', dResolution:7:3, 'ps');
+
+  RetCode := HH_GetResolution(DevIdx[0], Resolution);
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('HH_GetResolution error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
+  end;
+
+  Writeln('Resolution is ', Resolution:7:3, 'ps');
 
   // Note: After Init or SetSyncDiv you must allow > 400 ms for valid new count rate readings
-  //otherwise you get new values every 100 ms
-  Sleep (400);
+  // otherwise you get new values every 100 ms
+  Sleep(400);
 
-  writeln;
+  Writeln;
 
-  iRetCode := HH_GetSyncRate (iDevIdx[0], iSyncRate);
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('HH_GetSyncRate error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
+  RetCode := HH_GetSyncRate(DevIdx[0], SyncRate);
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('HH_GetSyncRate error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
   end;
-  writeln ('SyncRate = ', iSyncRate, '/s');
 
-  writeln;
+  Writeln('SyncRate = ', SyncRate, '/s');
+  Writeln;
 
-  for iChanIdx := 0 to iNumChannels-1 // for all channels
-  do begin
-    iRetCode := HH_GetCountRate (iDevIdx[0], iChanIdx, iCountRate);
-    if iRetCode <> HH_ERROR_NONE
-    then begin
-      writeln ('HH_GetCountRate error ', iRetCode:3, '. Aborted.');
-      ex (iRetCode);
+  for ChanIdx := 0 to NumChannels - 1 do // For all channels
+  begin
+    RetCode := HH_GetCountRate(DevIdx[0], ChanIdx, CountRate);
+    if RetCode <> HH_ERROR_NONE then
+    begin
+      Writeln('HH_GetCountRate error ', RetCode:3, '. Aborted.');
+      Ex(RetCode);
     end;
-    writeln ('Countrate [', iChanIdx:2, '] = ', iCountRate:8, '/s');
+    Writeln('Countrate [', ChanIdx:2, '] = ', CountRate:8, '/s');
   end;
 
-  writeln;
+  Writeln;
 
-
-  //new from v1.2: after getting the count rates you can check for warnings
-  iRetCode := HH_GetWarnings(iDevIdx[0], iWarnings);
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('HH_GetWarnings error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
+  // New from v1.2: after getting the count rates you can check for warnings
+  RetCode := HH_GetWarnings(DevIdx[0], Warnings);
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('HH_GetWarnings error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
   end;
-  if iWarnings <> 0
-  then begin
-    HH_GetWarningsText(iDevIdx[0], pcWtext, iWarnings);
-    writeln (strWtext);
+  if Warnings <> 0 then
+  begin
+    HH_GetWarningsText(DevIdx[0], pcWtext, Warnings);
+    Writeln(strWtext);
   end;
 
-  iRetCode := HH_SetStopOverflow (iDevIdx[0], 0, 10000); // for example only
-  if iRetCode <> HH_ERROR_NONE
-  then begin
-    writeln ('HH_SetStopOverflow error ', iRetCode:3, '. Aborted.');
-    ex (iRetCode);
+  RetCode := HH_SetStopOverflow(DevIdx[0], 0, 10000); // For example only
+  if RetCode <> HH_ERROR_NONE then
+  begin
+    Writeln('HH_SetStopOverflow error ', RetCode:3, '. Aborted.');
+    Ex(RetCode);
   end;
 
   repeat
-
-    HH_ClearHistMem (iDevIdx[0]);
-    if iRetCode <> HH_ERROR_NONE
-    then begin
-      writeln ('HH_ClearHistMem error ', iRetCode:3, '. Aborted.');
-      ex (iRetCode);
+    HH_ClearHistMem(DevIdx[0]);
+    if RetCode <> HH_ERROR_NONE then
+    begin
+      Writeln('HH_ClearHistMem error ', RetCode:3, '. Aborted.');
+      Ex(RetCode);
     end;
 
-    writeln('press RETURN to start measurement');
-    readln;
+    Writeln('Press RETURN to start measurement');
+    Readln;
 
-    writeln;
+    Writeln;
 
-    iRetCode := HH_GetSyncRate (iDevIdx[0], iSyncRate);
-    if iRetCode <> HH_ERROR_NONE
-    then begin
-      writeln ('HH_GetSyncRate error ', iRetCode:3, '. Aborted.');
-      ex (iRetCode);
+    RetCode := HH_GetSyncRate(DevIdx[0], SyncRate);
+    if RetCode <> HH_ERROR_NONE then
+    begin
+      Writeln('HH_GetSyncRate error ', RetCode:3, '. Aborted.');
+      Ex(RetCode);
     end;
-    writeln ('SyncRate = ', iSyncRate, '/s');
 
-    writeln;
+    Writeln('SyncRate = ', SyncRate, '/s');
+    Writeln;
 
-    for iChanIdx := 0 to iNumChannels-1 // for all channels
-    do begin
-      iRetCode := HH_GetCountRate (iDevIdx[0], iChanIdx, iCountRate);
-      if iRetCode <> HH_ERROR_NONE
-      then begin
-        writeln ('HH_GetCountRate error ', iRetCode:3, '. Aborted.');
-        ex (iRetCode);
+    for ChanIdx := 0 to NumChannels - 1 do // For all channels
+    begin
+      RetCode := HH_GetCountRate(DevIdx[0], ChanIdx, CountRate);
+      if RetCode <> HH_ERROR_NONE then
+      begin
+        Writeln('HH_GetCountRate error ', RetCode:3, '. Aborted.');
+        Ex(RetCode);
       end;
-      writeln ('Countrate [', iChanIdx:2, '] = ', iCountRate:8, '/s');
+      Writeln('Countrate [', ChanIdx:2, '] = ', CountRate:8, '/s');
     end;
 
-    writeln;
-    iRetCode := HH_StartMeas (iDevIdx[0], iTacq);
-    if iRetCode <> HH_ERROR_NONE
-    then begin
-      writeln ('HH_StartMeas error ', iRetCode:3, '. Aborted.');
-      ex (iRetCode);
+    Writeln;
+
+    RetCode := HH_StartMeas(DevIdx[0], TAcq);
+    if RetCode <> HH_ERROR_NONE then
+    begin
+      Writeln('HH_StartMeas error ', RetCode:3, '. Aborted.');
+      Ex(RetCode);
     end;
-    writeln ('Measuring for ', iTacq, ' milliseconds...');
+
+    Writeln('Measuring for ', TAcq, ' milliseconds...');
 
     repeat
-
-      iRetCode := HH_CTCStatus (iDevIdx[0], iCTCStatus);
-      if iRetCode <> HH_ERROR_NONE
-      then begin
-        writeln ('HH_CTCStatus error ', iRetCode:3, '. Aborted.');
-        ex (iRetCode);
+      RetCode := HH_CTCStatus(DevIdx[0], CTCStatus);
+      if RetCode <> HH_ERROR_NONE then
+      begin
+        Writeln('HH_CTCStatus error ', RetCode:3, '. Aborted.');
+        Ex(RetCode);
       end;
 
-    until (iCTCStatus <> 0);
+    until (CTCStatus <> 0);
 
-    iRetCode := HH_StopMeas (iDevIdx[0]);
-    if iRetCode <> HH_ERROR_NONE
-    then begin
-      writeln ('HH_StopMeas error ', iRetCode:3, '. Aborted.');
-      ex (iRetCode);
+    RetCode := HH_StopMeas(DevIdx[0]);
+    if RetCode <> HH_ERROR_NONE then
+    begin
+      Writeln('HH_StopMeas error ', RetCode:3, '. Aborted.');
+      Ex(RetCode);
     end;
 
-    writeln;
+    Writeln;
 
-    for iChanIdx := 0 to iNumChannels-1 // for all channels
-    do begin
-      iRetCode := HH_GetHistogram (iDevIdx[0], counts[iChanIdx][0], iChanIdx, 0);
-      if iRetCode <> HH_ERROR_NONE
-      then begin
-        writeln ('HH_GetHistogram error ', iRetCode:3, '. Aborted.');
-        ex (iRetCode);
+    for ChanIdx := 0 to NumChannels - 1 do // For all channels
+    begin
+      RetCode := HH_GetHistogram(DevIdx[0], counts[ChanIdx][0], ChanIdx, 0);
+      if RetCode <> HH_ERROR_NONE then
+      begin
+        Writeln('HH_GetHistogram error ', RetCode:3, '. Aborted.');
+        Ex(RetCode);
       end;
 
-      dIntegralCount := 0;
+      IntegralCount := 0;
 
-      for iHistoBin := 0 to iHistLen-1
-      do dIntegralCount := dIntegralCount + counts [iChanIdx][iHistoBin];
-
-      writeln ('  Integralcount [', iChanIdx:2, '] = ', dIntegralCount:9:0);
-
+      for HistoBin := 0 to HistLen - 1 do
+        IntegralCount := IntegralCount + counts[ChanIdx][HistoBin];
+      Writeln('  Integralcount [', ChanIdx:2, '] = ', IntegralCount:9:0);
     end;
 
-    writeln;
+    Writeln;
 
-    iRetCode := HH_GetFlags (iDevIdx[0], iFlags);
-    if iRetCode <> HH_ERROR_NONE
-    then begin
-      writeln ('HH_GetFlags error ', iRetCode:3, '. Aborted.');
-      ex (iRetCode);
+    RetCode := HH_GetFlags(DevIdx[0], Flags);
+    if RetCode <> HH_ERROR_NONE then
+    begin
+      Writeln('HH_GetFlags error ', RetCode:3, '. Aborted.');
+      Ex(RetCode);
     end;
 
-    if (iFlags and FLAG_OVERFLOW) > 0 then writeln ('  Overflow.');
+    if (Flags and FLAG_OVERFLOW) > 0 then
+      Writeln('  Overflow.');
 
-    writeln('Enter c to continue or q to quit and save the count data.');
-    readln(cCmd);
+    Writeln('Enter c to continue or q to quit and save the count data.');
+    Readln(Cmd);
 
-  until (cCmd = 'q');
+  until (Cmd = 'q');
 
-
-  for iHistoBin := 0 to iHistLen-1
-  do begin
-    for iChanIdx := 0 to iNumChannels-1
-    do write (outf, Counts [iChanIdx][iHistoBin]:5, ' ');
-    writeln (outf);
+  for HistoBin := 0 to HistLen - 1 do
+  begin
+    for ChanIdx := 0 to NumChannels - 1 do
+      Write(OutF, Counts[ChanIdx][HistoBin]:5, ' ');
+    Writeln(OutF);
   end;
 
   HH_CloseAllDevices;
-
-  ex (HH_ERROR_NONE);
+  CloseFile(OutF);
+  Ex (HH_ERROR_NONE);
 end.
 
